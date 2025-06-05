@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* DESKTOP - Com fundo */
+        #fundo {
+            background: url(https://i.imgur.com/C7jxOFo.jpeg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #loginBox {
+            background-color: black;
+            height: 400px;
+            width: 370px;
+        }
+
+        /* CELULAR - Apenas a box */
+        @media (max-width: 768px) {
+            #fundo {
+                background: none; /* Remove o fundo */
+                background-color: black; /* Só cor preta */
+            }
+            
+            #loginBox {
+                width: 100vw;  /* Largura total */
+                height: 100vh; /* Altura total */
+                border: none;  /* Remove borda */
+            }
+        }
+
+        /* CELULAR PEQUENO - Ainda mais específico */
+        @media (max-width: 480px) {
+            #loginBox {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="fundo">
+    <div id="loginBox">
+        <h2 style="color: white; text-align: center; padding-top: 50px;"></h2>
+    </div>
+</div>
+</body>
+</html>
