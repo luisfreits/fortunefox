@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Fortune Fox</title>
 <style>
         * {
             margin: 0;
@@ -14,10 +14,17 @@
             margin: 0;
             padding: 0;
         }
+
+        .tela{
+            display: none;
+        }
+
+        .tela.ativa{
+            display: block;
+        }
         
-        /* DESKTOP - Com fundo */
         #fundo {
-            background: url(https://i.imgur.com/C7jxOFo.jpeg);
+            background: url('src/background.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -29,40 +36,136 @@
             align-items: center;
         }
         
-        #loginBox {
+        #loginHome{
             background-color: black;
-            height: 400px;
-            width: 370px;
+            opacity: 95%;
+            height: 90vh;
+            width: 50vw;
+            display: flex;
+            justify-content: center;
+            border-radius: 15px;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
         }
-
-        /* CELULAR - Apenas a box */
-        @media (max-width: 768px) {
-            #fundo {
-                background: none; /* Remove o fundo */
-                background-color: black; /* Só cor preta */
-            }
-            
-            #loginBox {
-                width: 100vw;  /* Largura total */
-                height: 100vh; /* Altura total */
-                border: none;  /* Remove borda */
-            }
+        #logoLogin img{
+           width: 200px;
+           height: auto;
         }
-
-        /* CELULAR PEQUENO - Ainda mais específico */
-        @media (max-width: 480px) {
-            #loginBox {
-                width: 100%;
-                height: 100%;
-            }
+        #logoHome img{
+            width: 50px;
+            height: auto;
+        }
+        #loginBox{
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 300px;
+        }
+        #user, #senha{
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        #botaoLogin{
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            border: none;
+            background-color: #4caf50;
+            cursor:pointer;
+            transition: background-color 0.3s;
+        }
+        #botaoLogin hover{
+            background-color: #45a049;
+        }
+        #home{
+            background-color: black;
+            opacity: 80%;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            border-radius: 15px;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        #header{
+            width: 100%;
+            position: fixed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-sizing: border-box;
+            color: white;
+            padding: 15px 20px;
+            background-color: black;
+            top: 0;
+            left: 0;
         }
     </style>
 </head>
 <body>
-<div id="fundo">
-    <div id="loginBox">
-        <h2 style="color: white; text-align: center; padding-top: 50px;"></h2>
+<div id="telaLogin" class="tela ativa">
+    <div id="fundo">
+        <div id="loginHome">
+            <div id="logoLogin"><img src="src/logo-png.png" alt="tipografia"></div>
+            <div id="loginBox">
+                <input type="text" name="user" id="user" placeholder="Usuário">
+                <input type="text" name="senha" id="senha" placeholder="Senha">
+                <button id="botaoLogin" onclick="logar()">Entrar</button>
+            </div>
+
+        </div>
     </div>
 </div>
+<div id="telaHome" class="tela">
+    <div id="fundo">
+        <div id="home">
+            <div id="header">
+                <div id="logoHome">
+                    <img src="src/logo-png.png" alt="logo">
+                </div>
+                <div id="userInfo">
+                    Bem-vindo, <span id="nomeUsuario">Usuário</span>!
+                    <button id="botaoSair" onclick="sair()">Sair</button>
+                </div>
+            </div>
+
+            <div id="conteudoHome"> <!--colocar os jogos aqui em formas de quadrados acessaveis-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function logar(){
+        const user = document.getElementById(`user`).value;
+        const senha = document.getElementById(`senha`).value
+    if(user && senha){
+        document.getElementById(`nomeUsuario`).textContent = user
+        document.getElementById(`telaLogin`).classList.remove(`ativa`);
+        document.getElementById(`telaHome`).classList.add(`ativa`);
+    }else{
+        alert("Usuário ou senha inválidos!")
+    }
+}
+function sair(){
+    document.getElementById(`telaHome`).classList.remove(`ativa`);
+    document.getElementById(`telaLogin`).classList.add(`ativa`)
+
+    document.getElementById(`user`).value = ``;
+    document.getElementById(`senha`).value = ``;
+}
+</script>
 </body>
 </html>
