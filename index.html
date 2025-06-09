@@ -82,12 +82,12 @@
             cursor:pointer;
             transition: background-color 0.3s;
         }
-        #botaoLogin hover{
+        #botaoLogin:hover{
             background-color: #45a049;
+            transform: scale(1.05);
         }
+
         #home{
-            background-color: black;
-            opacity: 80%;
             height: 100vh;
             width: 100vw;
             display: flex;
@@ -97,6 +97,12 @@
             align-items: center;
             padding: 20px;
             position: relative;
+        }
+        #mascara { /* máscara preta (O jeito que tava antes na home, tava deixando tudo transparente) */
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 0;
         }
         #header{
             width: 100%;
@@ -108,10 +114,110 @@
             box-sizing: border-box;
             color: white;
             padding: 15px 20px;
-            background-color: black;
+            background-color: transparent;
             top: 0;
             left: 0;
         }
+        #fundoGrid{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 80vw;
+            height: 80vh;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius:15px;
+            background-color:black;
+            opacity: 0.8;
+            z-index: 1;
+            position: fixed;
+            top: 8.25%;
+            left: 9.25%;
+        }
+        .grid-2x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            z-index:2;
+            position: fixed;
+            top: 20%;
+            left: 20%;
+            border-color:white;
+            border-style: solid;
+            border-width: 1px;
+        }
+        .grid-2x2 button{
+            border: 10px solid rgb(134, 134, 134);
+            border-radius: 10px;
+            width: 30vw;
+            height: 30vh;
+            font-size: 40px;
+            color:crimson;
+            background-color:rgb(156, 156, 156);
+            z-index:2;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .grid-2x2 button:hover {
+            transform: scale(1.05);
+            background-color: rgb(200, 200, 200);
+        }
+
+        #financeiroJogos {
+            position: fixed;
+            top: 60px;
+            left: 50px;
+            width: 200px;
+            height: 250px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 000;
+            font-family: sans-serif;
+            display: none;
+        }
+        #tituloSaldo {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        #saldo {
+            font-size: 24px;
+            margin-top: 40px;
+        }
+        #valorAposta {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border: 1px solid #000;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        #txtValorApostando {
+            font-size: 16px;
+            margin-top: 8px;
+            justify-self: center;
+        }
+
+
+        .botao-roleta {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+            background-color: #0f0f0f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+        .botao-roleta:hover {
+            transform: scale(1.05);
+            background-color: #ffeaa7;
+            color: #0f0f0f;
+        }
+
     </style>
 </head>
 <body>
@@ -121,8 +227,8 @@
             <div id="logoLogin"><img src="src/logo-png.png" alt="tipografia"></div>
             <div id="loginBox">
                 <input type="text" name="user" id="user" placeholder="Usuário">
-                <input type="text" name="senha" id="senha" placeholder="Senha">
-                <button id="botaoLogin" onclick="logar()">Entrar</button>
+                <input type="password" name="senha" id="senha" placeholder="Senha">
+                <button id="botaoLogin" onclick="logar()">Entrar</button> 
             </div>
 
         </div>
@@ -137,35 +243,292 @@
                 </div>
                 <div id="userInfo">
                     Bem-vindo, <span id="nomeUsuario">Usuário</span>!
-                    <button id="botaoSair" onclick="sair()">Sair</button>
+                    <button id="botaoSair" onclick="voltar()">Voltar</button>
                 </div>
             </div>
 
             <div id="conteudoHome"> <!--colocar os jogos aqui em formas de quadrados acessaveis-->
+                <div id="mascara"></div>
+                <div id="fundoGrid"></div>
+                <div class="grid-2x2">
+                    <button id="btRoleta" onclick="roleta()">ROLETA</button>
+                    <button id="btFoguete" onclick="foguete()">FOGUETINHO</button>
+                    <button>A3</button>
+                    <button>A4</button>
+                </div>
             </div>
+
+            <div id="roleta"></div>
+
+            <div id="financeiroJogos"> <!--Menu com a opção de apostar e mostrar o saldo-->
+                <div id="tituloSaldo">Saldo</div>
+                <div id="saldo"></div>
+                <input type="text" id="valorAposta" placeholder="Valor da aposta">
+                <button id="apostar" onclick="apostar(0)">Apostar</button>
+                <button id="retirar" onclick="apostar(1)">Retirar</button>
+                <div id="txtValorApostando">Valor apostando:</div>
+                <div id="valorApostando"></div>
+
+            </div>
+
         </div>
     </div>
 </div>
 
 <script>
+    
+    var telaAtual = 0
+    const dicionarioTelas = {
+        0: `telaLogin`,
+        1: `telaHome`,
+        2: `Roleta`,
+    }
+    var saldo = 1000.00;
+    var totalAposta = 0.00;
+
+
+    document.getElementById("valorAposta").addEventListener("input", function(e) {// Faz o input da aposta ficar bointo
+        let input = e.target;
+
+        // Remove tudo que não for número
+        let valor = input.value.replace(/\D/g, "");
+
+        // Converte para número e divide por 100 para manter 2 casas decimais
+        valor = (parseInt(valor, 10) / 100).toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        // Adiciona símbolo $ manualmente
+        input.value = `$ ${valor}`;
+    });
+
     function logar(){
         const user = document.getElementById(`user`).value;
         const senha = document.getElementById(`senha`).value
-    if(user && senha){
-        document.getElementById(`nomeUsuario`).textContent = user
-        document.getElementById(`telaLogin`).classList.remove(`ativa`);
-        document.getElementById(`telaHome`).classList.add(`ativa`);
-    }else{
-        alert("Usuário ou senha inválidos!")
+        if(user && senha){
+            document.getElementById(`nomeUsuario`).textContent = user
+            document.getElementById(`telaLogin`).classList.remove(`ativa`);
+            document.getElementById(`telaHome`).classList.add(`ativa`);
+            telaAtual = 1;
+        }else{alert("Usuário ou senha inválidos!")}
     }
-}
-function sair(){
-    document.getElementById(`telaHome`).classList.remove(`ativa`);
-    document.getElementById(`telaLogin`).classList.add(`ativa`)
+    
 
-    document.getElementById(`user`).value = ``;
-    document.getElementById(`senha`).value = ``;
-}
+    function voltar(){ // Antigo sair(), agora universal para voltar de qualquer tela (se configurado)
+        if (telaAtual==1) { //telaHome
+            document.getElementById(`telaHome`).classList.remove(`ativa`);
+            document.getElementById(`telaLogin`).classList.add(`ativa`);
+
+            document.getElementById(`user`).value = ``;
+            document.getElementById(`senha`).value = ``;
+            telaAtual = 0;
+        }
+        else {
+            document.getElementById(`financeiroJogos`).style.display = "none"; //Tira o menu de apostas
+            if (telaAtual==2) { //roleta
+                document.getElementById(`roleta`).innerHTML = ``;
+                mostrarGrid();
+                telaAtual = 1;
+            }
+        }
+    }
+
+    function ocultarGrid(){
+        document.getElementById(`fundoGrid`).style.display = `none`;
+        const grids = document.getElementsByClassName(`grid-2x2`);
+        for (let grid of grids) {
+            grid.style.display = `none`;
+        }
+    }
+    function mostrarGrid(){
+        document.getElementById(`fundoGrid`).style.display = `flex`;
+        const grids = document.getElementsByClassName(`grid-2x2`);
+        for (let grid of grids) {
+            grid.style.display = `grid`;
+        }
+    }
+
+
+    function atualizarSaldo() { // Atualiza o saldo e o valor apostado na tela
+        document.getElementById("saldo").textContent = `$ ${saldo.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}`;
+        document.getElementById("valorApostando").textContent = `$ ${totalAposta.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}`;
+    }
+    atualizarSaldo();
+
+    function apostar(funcao) { // funcao=0 para transferir o saldo para a aposta, funcao=1 para transferir a aposta para o saldo
+        const valorAposta = document.getElementById("valorAposta").value;
+        const valorNumerico = parseFloat(valorAposta.replace(/[^0-9,-]+/g, "").replace(",", "."));
+        
+        if (isNaN(valorNumerico) || valorNumerico <= 0) {
+            alert("Por favor, insira um valor válido para a aposta.");
+            return;
+        }
+        
+        if ((valorNumerico > saldo)&& (funcao==0)) {
+            alert("Saldo insuficiente para realizar esta aposta.");
+            return;
+        }
+        if ((valorNumerico > totalAposta)&& (funcao==1)) {
+            alert("Valor apostado insuficiente para retirar esta quantia.");
+            return;
+        }
+        if (funcao==0) {
+            saldo -= valorNumerico;
+            totalAposta += valorNumerico;
+        } 
+        else if (funcao==1) {
+            saldo += valorNumerico;
+            totalAposta -= valorNumerico;
+        }
+        atualizarSaldo();
+        document.getElementById("valorAposta").value = `$ 0,00`; // Reseta o campo de aposta
+        alert(`Aposta de R$ ${valorNumerico.toFixed(2)} realizada com sucesso!`);
+    }
+
+
+    function foguete(){
+        alert("Foguete em desenvolvimento!");
+    }
+    
+    
+    async function roleta(){
+        telaAtual = 2;
+        ocultarGrid();
+        document.getElementById("financeiroJogos").style.display = "block";
+        let premios = ["-10%", "+10%", "-20%", "+20%", "-35%", "+35%", "-50%", "+50%", "-100%", "+100%"] // Itens da roleta
+
+
+        function criarRoleta(containerId, opcoes = {}, duracao) {
+
+            const {width, height, items, colors, buttonLabel, zIndex} = opcoes;
+            const container = document.getElementById(containerId);
+            if (!container) return console.error("Contêiner da roleta não encontrado:", containerId);
+
+            // Criação do HTML isolado
+            container.innerHTML = `
+                <div style="text-align: center; font-family: sans-serif; z-index: ${zIndex}; position: relative;">
+                <canvas width="${width}px" height="${height}px" style="margin-bottom: 10px;"></canvas><br/>
+                <button class="botao-roleta">${buttonLabel}</button>
+                </div>
+            `;
+
+            const canvas = container.querySelector("canvas");
+            const button = container.querySelector("button");
+            const ctx = canvas.getContext("2d");
+            const raio = width / 2;
+            let anguloAtual = 0;
+            let girando = false;
+
+            function desenharRoleta() {
+                const anguloPorSegmento = 2 * Math.PI / items.length;
+                ctx.clearRect(0, 0, width, height);
+
+                for (let i = 0; i < items.length; i++) {
+                    const anguloInicio = anguloAtual + i * anguloPorSegmento;
+                    const anguloFim = anguloInicio + anguloPorSegmento;
+
+                    ctx.beginPath();
+                    ctx.moveTo(raio, raio);
+                    ctx.arc(raio, raio, raio, anguloInicio, anguloFim);
+                    ctx.fillStyle = colors[i % colors.length];
+                    ctx.fill();
+
+                    // Texto
+                    ctx.save();
+                    ctx.translate(raio, raio);
+                    ctx.rotate(anguloInicio + anguloPorSegmento / 2);
+                    ctx.textAlign = "right";
+                    ctx.fillStyle = colors[i % colors.length *(-1) +1];
+                    ctx.font = "bold 40px sans-serif";
+                    ctx.fillText(items[i], raio - 50, 10);
+                    ctx.restore();
+                }
+
+                // Indicador
+                ctx.fillStyle = "#000";
+                ctx.beginPath();
+                ctx.moveTo(raio, 10);
+                ctx.lineTo(raio - 10, 30);
+                ctx.lineTo(raio + 10, 30);
+                ctx.closePath();
+                ctx.fill();
+            }
+            desenharRoleta();
+            
+
+            return function girar() {
+                return new Promise(resolve => {
+                    if (girando) return;
+                    girando = true;
+
+                    const DURACAO = duracao;
+                    const inicio = performance.now();
+                    const velocidadeInicial = Math.random() * 0.15 + 0.5;
+
+                    function animar(now) {
+                        const tempoDecorrido = now - inicio;
+                        const tempoRestante = DURACAO - tempoDecorrido;
+
+                        // Calcula a velocidade proporcional ao tempo restante (quadrática)
+                        let fator = tempoRestante / DURACAO;
+                        if (fator < 0) fator = 0;
+                        let velocidade = velocidadeInicial * fator * fator;
+
+
+                        anguloAtual += velocidade;
+                        anguloAtual %= 2 * Math.PI;
+                        desenharRoleta();
+
+                        if (tempoDecorrido < DURACAO) requestAnimationFrame(animar);
+                        else {
+                            girando = false;
+                            const anguloPorSegmento = 2 * Math.PI / items.length;
+                            const indice = Math.floor(((3 * Math.PI / 2 - anguloAtual + 2 * Math.PI) % (2 * Math.PI)) / anguloPorSegmento);
+                            const resultado = items[indice];
+                            resolve(resultado);
+                        }
+                    }
+                    requestAnimationFrame(animar);
+                })
+            }
+        }
+
+        /*Fazer alterações na configuração da roleta abaixo*/
+        let girarRoleta = criarRoleta("roleta", {
+            width: diametro = 800, // Diâmetro da roleta
+            height: diametro,
+            items: premios, // Itens da roleta
+            colors: ["#0f0f0f", "#ffeaa7"], // Cores dos segmentos
+            buttonLabel: "Tentar a sorte", // Texto do botão
+            zIndex: 1000 // Controle de sobreposição
+        }, 20000); // Duração do giro em milissegundos
+
+
+
+        const botao = document.querySelector("#roleta button");
+        botao.addEventListener("click", async () => {
+            const resultado = await girarRoleta();
+            
+            const evento = new CustomEvent("roleta-finalizada", {detail: resultado});
+            document.dispatchEvent(evento);
+        });
+
+        document.addEventListener("roleta-finalizada", (e) => {
+            const resultado = e.detail;
+            alert(`Você ${resultado.startsWith("-") ? "perdeu" : "ganhou"} ${resultado.replace("%", "")}% da sua aposta!`);
+            totalAposta += parseFloat(resultado.replace("%", "")) / 100 * totalAposta;
+            atualizarSaldo();
+        });
+    }
+    
+    
 </script>
 </body>
 </html>
