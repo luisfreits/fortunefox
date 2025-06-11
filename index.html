@@ -670,60 +670,38 @@
     atualizarSaldo();
     atualizarSaldoFoguetinho();
 
-    function apostar(funcao) { // funcao=0 para transferir o saldo para a aposta, funcao=1 para transferir a aposta para o saldo
+    function apostar(funcao) { // funcao=0 para apostar, funcao=1 para retirar
         const valorAposta = document.getElementById("valorAposta").value;
         const valorNumerico = parseFloat(valorAposta.replace(/[^0-9,-]+/g, "").replace(",", "."));
         
-        if (isNaN(valorNumerico) || valorNumerico <= 0) {
-            alert("Por favor, insira um valor válido para a aposta.");
-            return;
-        }
-        
-        if ((valorNumerico > saldo)&& (funcao==0)) {
-            alert("Saldo insuficiente para realizar esta aposta.");
-            return;
-        }
-        if ((valorNumerico > totalAposta)&& (funcao==1)) {
-            alert("Valor apostado insuficiente para retirar esta quantia.");
-            return;
-        }
-        if (funcao==0) {
+        if (funcao == 0) {
+            if (isNaN(valorNumerico) || valorNumerico <= 0) {
+                alert("Por favor, insira um valor válido para a aposta.");
+                return;
+            }
+            if (valorNumerico > saldo) {
+                alert("Saldo insuficiente para realizar esta aposta.");
+                return;
+            }
             saldo -= valorNumerico;
             totalAposta += valorNumerico;
-        } 
-        else if (funcao==1) {
-            saldo += valorNumerico;
-            totalAposta -= valorNumerico;
+            atualizarSaldo();
+            atualizarSaldoFoguetinho();
+            document.getElementById("valorAposta").value = `$ 0,00`;
+            alert(`Aposta de R$ ${valorNumerico.toFixed(2)} realizada com sucesso!`);
+        } else if (funcao == 1) {
+            if (totalAposta <= 0) {
+                alert("Não há valor apostado para retirar.");
+                return;
+            }
+            saldo += totalAposta;
+            totalAposta = 0;
+            atualizarSaldo();
+            atualizarSaldoFoguetinho();
+            document.getElementById("valorAposta").value = `$ 0,00`;
+            alert("Valor apostado transferido para o saldo!");
         }
-        atualizarSaldo();
-        atualizarSaldoFoguetinho();
-        document.getElementById("valorAposta").value = `$ 0,00`; // Reseta o campo de aposta
-        alert(`Aposta de R$ ${valorNumerico.toFixed(2)} realizada com sucesso!`);
     }
-
-    function apostarFoguetinho() { // Função específica para apostar no foguetinho
-        const valorAposta = document.getElementById("valorApostaFoguetinho").value;
-        const valorNumerico = parseFloat(valorAposta.replace(/[^0-9,-]+/g, "").replace(",", "."));
-        
-        if (isNaN(valorNumerico) || valorNumerico <= 0) {
-            alert("Por favor, insira um valor válido para a aposta.");
-            return;
-        }
-        
-        if (valorNumerico > saldo) {
-            alert("Saldo insuficiente para realizar esta aposta.");
-            return;
-        }
-        
-        saldo -= valorNumerico;
-        valorApostadoFoguetinho += valorNumerico;
-        
-        atualizarSaldo();
-        atualizarSaldoFoguetinho();
-        document.getElementById("valorApostaFoguetinho").value = `$ 0,00`; // Reseta o campo de aposta
-        alert(`Aposta de R$ ${valorNumerico.toFixed(2)} realizada com sucesso!`);
-    }
-
     // Funções do Foguetinho
     function foguetinho(){
         telaAtual = 3;
@@ -953,13 +931,16 @@
 
         document.addEventListener("roleta-finalizada", (e) => {
             const resultado = e.detail;
-            alert(`Você ${resultado.startsWith("-") ? "perdeu" : "ganhou"} ${resultado.replace("%", "")}% da sua aposta!`);
-            totalAposta += parseFloat(resultado.replace("%", "")) / 100 * totalAposta;
-            atualizarSaldo();
+            let percentual = parseFloat(resultado.replace("%", ""));
+            if (isNaN(percentual)) percentual = 0;
+            if (totalAposta > 0) {
+                totalAposta = totalAposta + (totalAposta * percentual / 100);
+                if (totalAposta < 0) totalAposta = 0;
+                atualizarSaldo();
+            }
+            alert(`Você ${percentual < 0 ? "perdeu" : "ganhou"} ${Math.abs(percentual)}% da sua aposta!`);
         });
     }
-    
-    
 </script>
 </body>
 </html>
