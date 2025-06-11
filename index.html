@@ -600,7 +600,7 @@
         });
         input.value = `$ ${valor}`;
     });
-    function logar(){
+    function logar(){ /*vai verificar se preencheu user e senha, depois vai mudar de tela*/
         const user = document.getElementById(`user`).value;
         const senha = document.getElementById(`senha`).value
         if(user && senha){
@@ -610,7 +610,7 @@
             telaAtual = 1;
         }else{alert("Usuário ou senha inválidos!")}
     }
-    function voltar(){
+    function voltar(){ /*vai mudar o valor da variavel de tela inicial e com isso mudar tbm a tela*/
         if (telaAtual==1) {
             document.getElementById(`telaHome`).classList.remove(`ativa`);
             document.getElementById(`telaLogin`).classList.add(`ativa`);
