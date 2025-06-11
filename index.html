@@ -98,7 +98,7 @@
             padding: 20px;
             position: relative;
         }
-        #mascara { /* máscara preta (O jeito que tava antes na home, tava deixando tudo transparente) */
+        #mascara {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background-color: rgba(0,0,0,0.8);
@@ -135,6 +135,10 @@
             left: 9.25%;
         }
         .grid-2x2 {
+            position: static !important;
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
@@ -202,19 +206,24 @@
         }
 
         .botao-roleta {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 15px 30px;
+            font-size: 18px;
             cursor: pointer;
             transition: transform 0.3s, background-color 0.3s;
-            background-color: #0f0f0f;
+            background-color: #4caf50;
             color: white;
             border: none;
             border-radius: 8px;
+            margin: 10px;
         }
         .botao-roleta:hover {
             transform: scale(1.05);
-            background-color: #ffeaa7;
-            color: #0f0f0f;
+            background-color: #45a049;
+        }
+        .botao-roleta:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* Estilos específicos do foguetinho */
@@ -460,6 +469,38 @@
             }
         }
 
+        .roleta-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            border-radius: 15px;
+            color: white;
+            font-family: sans-serif;
+            box-shadow: 0 0 20px #0008;
+        }
+
+        #apostar {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+            border: none;
+            background-color: #4caf50;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #apostar:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -472,7 +513,6 @@
                 <input type="password" name="senha" id="senha" placeholder="Senha">
                 <button id="botaoLogin" onclick="logar()">Entrar</button> 
             </div>
-
         </div>
     </div>
 </div>
@@ -488,20 +528,20 @@
                     <button id="botaoSair" onclick="voltar()">Voltar</button>
                 </div>
             </div>
-
-            <div id="conteudoHome"> <!--colocar os jogos aqui em formas de quadrados acessaveis-->
+            <div id="conteudoHome">
                 <div id="mascara"></div>
                 <div id="fundoGrid"></div>
-                <div class="grid-2x2">
-                    <button id="btRoleta" onclick="roleta()">ROLETA</button>
-                    <button id="btFoguete" onclick="foguetinho()">FOGUETINHO</button>
-                    <button>A3</button>
-                    <button>A4</button>
+                <div id="bloco-jogos" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto; width: 100%;">
+                    <div id="titulo-fortune" style="color: #fff; font-size: 32px; font-weight: bold; margin-bottom: 24px; width: 100%; text-align: center;">
+                        FORTUNE GAMES
+                    </div>
+                    <div class="grid-2x2" style="position: static; border: none; background: none; box-shadow: none;">
+                        <button id="btRoleta" onclick="roleta()">ROLETA</button>
+                        <button id="btFoguete" onclick="foguetinho()">FOGUETINHO</button>
+                    </div>
                 </div>
             </div>
-
             <div id="roleta"></div>
-
             <div id="foguetinho">
                 <div id="multiplicadorDisplay">0.00x</div>
                 <div id="statusFoguetinho">Faça sua aposta e clique em "Decolar"!</div>
@@ -511,8 +551,7 @@
                     <button id="botaoNovoJogo" class="botao-foguetinho" onclick="resetarFoguetinho()" style="display: none;">Novo Jogo</button>
                 </div>
             </div>
-
-            <div id="painelFoguetinho"> <!--Painel específico do foguetinho-->
+            <div id="painelFoguetinho">
                 <div id="tituloSaldoFoguetinho">Saldo</div>
                 <div id="saldoFoguetinho"></div>
                 <input type="text" id="valorApostaFoguetinho" placeholder="Valor da aposta">
@@ -520,24 +559,18 @@
                 <div style="font-size: 14px; margin-top: 10px;">Valor apostado:</div>
                 <div id="valorApostadoFoguetinho" style="font-size: 16px; font-weight: bold;"></div>
             </div>
-
-            <div id="financeiroJogos"> <!--Menu com a opção de apostar e mostrar o saldo-->
+            <div id="financeiroJogos">
                 <div id="tituloSaldo">Saldo</div>
                 <div id="saldo"></div>
                 <input type="text" id="valorAposta" placeholder="Valor da aposta">
                 <button id="apostar" onclick="apostar(0)">Apostar</button>
-                <button id="retirar" onclick="apostar(1)">Retirar</button>
-                <div id="txtValorApostando">Valor apostando:</div>
-                <div id="valorApostando"></div>
-
+                <div style="font-size: 14px; margin-top: 10px;">Valor apostado:</div>
+                <div id="valorApostando" style="font-size: 16px; font-weight: bold;"></div>
             </div>
-
         </div>
     </div>
 </div>
-
 <script>
-    
     var telaAtual = 0
     const dicionarioTelas = {
         0: `telaLogin`,
@@ -547,46 +580,29 @@
     }
     var saldo = 1000.00;
     var totalAposta = 0.00;
-
-    // Variáveis do foguetinho
     var foguetinhoAtivo = false;
     var multiplicadorAtual = 0.00;
     var intervalFoguetinho = null;
     var apostouFoguetinho = false;
     var valorApostadoFoguetinho = 0.00;
-
-    document.getElementById("valorAposta").addEventListener("input", function(e) {// Faz o input da aposta ficar bointo
+    document.getElementById("valorAposta").addEventListener("input", function(e) {
         let input = e.target;
-
-        // Remove tudo que não for número
         let valor = input.value.replace(/\D/g, "");
-
-        // Converte para número e divide por 100 para manter 2 casas decimais
         valor = (parseInt(valor, 10) / 100).toLocaleString("pt-BR", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
-
-        // Adiciona símbolo $ manualmente
         input.value = `$ ${valor}`;
     });
-
-    document.getElementById("valorApostaFoguetinho").addEventListener("input", function(e) {// Faz o input da aposta do foguetinho ficar bonito
+    document.getElementById("valorApostaFoguetinho").addEventListener("input", function(e) {
         let input = e.target;
-
-        // Remove tudo que não for número
         let valor = input.value.replace(/\D/g, "");
-
-        // Converte para número e divide por 100 para manter 2 casas decimais
         valor = (parseInt(valor, 10) / 100).toLocaleString("pt-BR", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
-
-        // Adiciona símbolo $ manualmente
         input.value = `$ ${valor}`;
     });
-
     function logar(){
         const user = document.getElementById(`user`).value;
         const senha = document.getElementById(`senha`).value
@@ -597,27 +613,23 @@
             telaAtual = 1;
         }else{alert("Usuário ou senha inválidos!")}
     }
-    
-
-    function voltar(){ // Antigo sair(), agora universal para voltar de qualquer tela (se configurado)
-        if (telaAtual==1) { //telaHome
+    function voltar(){
+        if (telaAtual==1) {
             document.getElementById(`telaHome`).classList.remove(`ativa`);
             document.getElementById(`telaLogin`).classList.add(`ativa`);
-
             document.getElementById(`user`).value = ``;
             document.getElementById(`senha`).value = ``;
             telaAtual = 0;
         }
         else {
-            document.getElementById(`financeiroJogos`).style.display = "none"; //Tira o menu de apostas
-            document.getElementById(`painelFoguetinho`).style.display = "none"; //Tira o painel do foguetinho
-            if (telaAtual==2) { //roleta
+            document.getElementById(`financeiroJogos`).style.display = "none";
+            document.getElementById(`painelFoguetinho`).style.display = "none";
+            if (telaAtual==2) {
                 document.getElementById(`roleta`).innerHTML = ``;
                 mostrarGrid();
                 telaAtual = 1;
             }
-            else if (telaAtual==3) { //foguetinho
-                // Para o foguetinho se estiver rodando
+            else if (telaAtual==3) {
                 if (foguetinhoAtivo) {
                     clearInterval(intervalFoguetinho);
                     foguetinhoAtivo = false;
@@ -629,7 +641,6 @@
             }
         }
     }
-
     function ocultarGrid(){
         document.getElementById(`fundoGrid`).style.display = `none`;
         const grids = document.getElementsByClassName(`grid-2x2`);
@@ -644,9 +655,7 @@
             grid.style.display = `grid`;
         }
     }
-
-
-    function atualizarSaldo() { // Atualiza o saldo e o valor apostado na tela
+    function atualizarSaldo() {
         document.getElementById("saldo").textContent = `$ ${saldo.toLocaleString("pt-BR", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
@@ -656,8 +665,7 @@
             maximumFractionDigits: 2
         })}`;
     }
-
-    function atualizarSaldoFoguetinho() { // Atualiza o saldo e o valor apostado no foguetinho
+    function atualizarSaldoFoguetinho() {
         document.getElementById("saldoFoguetinho").textContent = `$ ${saldo.toLocaleString("pt-BR", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
@@ -669,11 +677,9 @@
     }
     atualizarSaldo();
     atualizarSaldoFoguetinho();
-
-    function apostar(funcao) { // funcao=0 para apostar, funcao=1 para retirar
+    function apostar(funcao) {
         const valorAposta = document.getElementById("valorAposta").value;
         const valorNumerico = parseFloat(valorAposta.replace(/[^0-9,-]+/g, "").replace(",", "."));
-        
         if (funcao == 0) {
             if (isNaN(valorNumerico) || valorNumerico <= 0) {
                 alert("Por favor, insira um valor válido para a aposta.");
@@ -702,7 +708,6 @@
             alert("Valor apostado transferido para o saldo!");
         }
     }
-    // Funções do Foguetinho
     function foguetinho(){
         telaAtual = 3;
         ocultarGrid();
@@ -711,141 +716,113 @@
         resetarFoguetinho();
         atualizarSaldoFoguetinho();
     }
-
     function resetarFoguetinho() {
         foguetinhoAtivo = false;
         multiplicadorAtual = 0.00;
         apostouFoguetinho = false;
-        
         if (intervalFoguetinho) {
             clearInterval(intervalFoguetinho);
             intervalFoguetinho = null;
         }
-        
         document.getElementById("multiplicadorDisplay").textContent = "0.00x";
         document.getElementById("multiplicadorDisplay").classList.remove("crash");
         document.getElementById("statusFoguetinho").textContent = "Faça sua aposta e clique em 'Decolar'!";
-        
         document.getElementById("botaoDecolar").disabled = false;
         document.getElementById("botaoParar").disabled = true;
         document.getElementById("botaoNovoJogo").style.display = "none";
     }
-
     function iniciarFoguetinho() {
         if (valorApostadoFoguetinho <= 0) {
             alert("Você precisa fazer uma aposta primeiro!");
             return;
         }
-        
         if (foguetinhoAtivo) return;
-        
         foguetinhoAtivo = true;
         apostouFoguetinho = true;
         multiplicadorAtual = 0.00;
-        
         document.getElementById("botaoDecolar").disabled = true;
         document.getElementById("botaoParar").disabled = false;
         document.getElementById("statusFoguetinho").textContent = "Foguete decolando... Clique em 'Parar' para sacar!";
-        
         intervalFoguetinho = setInterval(() => {
             multiplicadorAtual += 0.05;
-            multiplicadorAtual = Math.round(multiplicadorAtual * 100) / 100; // Arredonda para 2 casas decimais
-            
+            multiplicadorAtual = Math.round(multiplicadorAtual * 100) / 100;
             document.getElementById("multiplicadorDisplay").textContent = multiplicadorAtual.toFixed(2) + "x";
-            
-            // 15% de chance de crash a cada incremento
             const crashChance = Math.random();
-            
             if (crashChance < 0.15 || multiplicadorAtual >= 10.00) {
                 crashFoguetinho();
             }
-        }, 250); // 0.25 segundos = 250ms
+        }, 250);
     }
-
     function pararFoguetinho() {
         if (!foguetinhoAtivo || !apostouFoguetinho) return;
-        
         clearInterval(intervalFoguetinho);
         foguetinhoAtivo = false;
-        
         const ganho = valorApostadoFoguetinho * multiplicadorAtual;
         saldo += ganho;
         valorApostadoFoguetinho = 0;
-        
         document.getElementById("statusFoguetinho").textContent = 
             `Parabéns! Você ganhou $ ${ganho.toFixed(2)} (${multiplicadorAtual.toFixed(2)}x)!`;
-        
         document.getElementById("botaoParar").disabled = true;
         document.getElementById("botaoNovoJogo").style.display = "inline-block";
-        
         atualizarSaldo();
         atualizarSaldoFoguetinho();
-        
         alert(`Você sacou no multiplicador ${multiplicadorAtual.toFixed(2)}x e ganhou $ ${ganho.toFixed(2)}!`);
     }
-
     function crashFoguetinho() {
         clearInterval(intervalFoguetinho);
         foguetinhoAtivo = false;
-        
         document.getElementById("multiplicadorDisplay").classList.add("crash");
         document.getElementById("statusFoguetinho").textContent = 
             `CRASH! O foguete explodiu em ${multiplicadorAtual.toFixed(2)}x. Você perdeu $ ${valorApostadoFoguetinho.toFixed(2)}.`;
-        
-        valorApostadoFoguetinho = 0; // Perde a aposta
-        
+        valorApostadoFoguetinho = 0;
         document.getElementById("botaoParar").disabled = true;
         document.getElementById("botaoNovoJogo").style.display = "inline-block";
-        
         atualizarSaldo();
         atualizarSaldoFoguetinho();
-        
         alert(`CRASH! O foguete explodiu em ${multiplicadorAtual.toFixed(2)}x. Você perdeu sua aposta!`);
     }
-    
     async function roleta(){
         telaAtual = 2;
         ocultarGrid();
         document.getElementById("financeiroJogos").style.display = "block";
-        let premios = ["-10%", "+10%", "-20%", "+20%", "-35%", "+35%", "-50%", "+50%", "-100%", "+100%"] // Itens da roleta
-
-
+        let premios = ["-10%", "+10%", "-20%", "+20%", "-35%", "+35%", "-50%", "+50%", "-100%", "+100%"]
+        let positivos = 0;
+        let idx = 0;
+        while (idx < premios.length) {
+            if (premios[idx].includes("+")) positivos++;
+            idx++;
+        }
+        console.log("Prêmios positivos:", positivos);
+        premios.forEach(function(premio, i) {
+            console.log(`Prêmio ${i + 1}: ${premio}`);
+        });
         function criarRoleta(containerId, opcoes = {}, duracao) {
-
             const {width, height, items, colors, buttonLabel, zIndex} = opcoes;
             const container = document.getElementById(containerId);
             if (!container) return console.error("Contêiner da roleta não encontrado:", containerId);
-
-            // Criação do HTML isolado
             container.innerHTML = `
-                <div style="text-align: center; font-family: sans-serif; z-index: ${zIndex}; position: relative;">
-                <canvas width="${width}px" height="${height}px" style="margin-bottom: 10px;"></canvas><br/>
-                <button class="botao-roleta">${buttonLabel}</button>
+                <div class="roleta-container" style="z-index: ${zIndex}; position: relative;">
+                    <canvas width="${width}px" height="${height}px" style="margin-bottom: 10px;"></canvas><br/>
+                    <button class="botao-roleta">${buttonLabel}</button>
                 </div>
             `;
-
             const canvas = container.querySelector("canvas");
             const button = container.querySelector("button");
             const ctx = canvas.getContext("2d");
             const raio = width / 2;
             let anguloAtual = 0;
             let girando = false;
-
             function desenharRoleta() {
                 const anguloPorSegmento = 2 * Math.PI / items.length;
                 ctx.clearRect(0, 0, width, height);
-
                 for (let i = 0; i < items.length; i++) {
                     const anguloInicio = anguloAtual + i * anguloPorSegmento;
                     const anguloFim = anguloInicio + anguloPorSegmento;
-
                     ctx.beginPath();
                     ctx.moveTo(raio, raio);
                     ctx.arc(raio, raio, raio, anguloInicio, anguloFim);
                     ctx.fillStyle = colors[i % colors.length];
                     ctx.fill();
-
-                    // Texto
                     ctx.save();
                     ctx.translate(raio, raio);
                     ctx.rotate(anguloInicio + anguloPorSegmento / 2);
@@ -855,8 +832,6 @@
                     ctx.fillText(items[i], raio - 50, 10);
                     ctx.restore();
                 }
-
-                // Indicador
                 ctx.fillStyle = "#000";
                 ctx.beginPath();
                 ctx.moveTo(raio, 10);
@@ -866,31 +841,22 @@
                 ctx.fill();
             }
             desenharRoleta();
-            
-
             return function girar() {
                 return new Promise(resolve => {
                     if (girando) return;
                     girando = true;
-
                     const DURACAO = duracao;
                     const inicio = performance.now();
                     const velocidadeInicial = Math.random() * 0.15 + 0.5;
-
                     function animar(now) {
                         const tempoDecorrido = now - inicio;
                         const tempoRestante = DURACAO - tempoDecorrido;
-
-                        // Calcula a velocidade proporcional ao tempo restante (quadrática)
                         let fator = tempoRestante / DURACAO;
                         if (fator < 0) fator = 0;
                         let velocidade = velocidadeInicial * fator * fator;
-
-
                         anguloAtual += velocidade;
                         anguloAtual %= 2 * Math.PI;
                         desenharRoleta();
-
                         if (tempoDecorrido < DURACAO) requestAnimationFrame(animar);
                         else {
                             girando = false;
@@ -904,42 +870,54 @@
                 })
             }
         }
-
-        /*Fazer alterações na configuração da roleta abaixo*/
-        // Responsive diameter for the roulette
         let screenW = Math.min(window.innerWidth, window.innerHeight);
         let diametro = screenW > 500 ? 400 : Math.floor(screenW * 0.9);
-
         let girarRoleta = criarRoleta("roleta", {
-            width: diametro, // Diâmetro da roleta
+            width: diametro,
             height: diametro,
-            items: premios, // Itens da roleta
-            colors: ["#0f0f0f", "#ffeaa7"], // Cores dos segmentos
-            buttonLabel: "Tentar a sorte", // Texto do botão
-            zIndex: 1000 // Controle de sobreposição
-        }, 8000); // Duração do giro em milissegundos
-
-
-
+            items: premios,
+            colors: ["#0f0f0f", "#ffeaa7"],
+            buttonLabel: "Tentar a sorte",
+            zIndex: 1000
+        }, 8000);
         const botao = document.querySelector("#roleta button");
         botao.addEventListener("click", async () => {
             const resultado = await girarRoleta();
-            
             const evento = new CustomEvent("roleta-finalizada", {detail: resultado});
             document.dispatchEvent(evento);
         });
-
         document.addEventListener("roleta-finalizada", (e) => {
             const resultado = e.detail;
             let percentual = parseFloat(resultado.replace("%", ""));
             if (isNaN(percentual)) percentual = 0;
             if (totalAposta > 0) {
-                totalAposta = totalAposta + (totalAposta * percentual / 100);
-                if (totalAposta < 0) totalAposta = 0;
+                let valorFinal = totalAposta + (totalAposta * percentual / 100);
+                let diferenca = valorFinal - totalAposta;
+                saldo += valorFinal;
+                totalAposta = 0;
                 atualizarSaldo();
+                atualizarSaldoFoguetinho();
+                alert(`Você ${percentual < 0 ? "perdeu" : "ganhou"} ${Math.abs(percentual)}% da sua aposta!`);
             }
-            alert(`Você ${percentual < 0 ? "perdeu" : "ganhou"} ${Math.abs(percentual)}% da sua aposta!`);
         });
+    }
+    function apostarFoguetinho() {
+        const input = document.getElementById("valorApostaFoguetinho").value;
+        const valorNumerico = parseFloat(input.replace(/[^0-9,-]+/g, "").replace(",", "."));
+        if (isNaN(valorNumerico) || valorNumerico <= 0) {
+            alert("Por favor, insira um valor válido para a aposta.");
+            return;
+        }
+        if (valorNumerico > saldo) {
+            alert("Saldo insuficiente para realizar esta aposta.");
+            return;
+        }
+        saldo -= valorNumerico;
+        valorApostadoFoguetinho = valorNumerico;
+        atualizarSaldo();
+        atualizarSaldoFoguetinho();
+        document.getElementById("valorApostaFoguetinho").value = `$ 0,00`;
+        alert(`Aposta de R$ ${valorNumerico.toFixed(2)} realizada com sucesso!`);
     }
 </script>
 </body>
