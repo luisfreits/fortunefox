@@ -599,7 +599,7 @@ style="position:absolute; top:10px; right:10px; z-index:10000;">Fechar</button>
         });
         input.value = `$ ${valor}`;
     });
-    function logar(){ /*vai verificar se preencheu user e senha, depois vai mudar de tela*/
+    function logar(){ 
         const user = document.getElementById(`user`).value;
         const senha = document.getElementById(`senha`).value
         if(user && senha){
@@ -609,7 +609,7 @@ style="position:absolute; top:10px; right:10px; z-index:10000;">Fechar</button>
             telaAtual = 1;
         }else{alert("Usuário ou senha inválidos!")}
     }
-    function voltar(){ /*vai mudar o valor da variavel de tela inicial e com isso mudar tbm a tela*/
+    function voltar(){
         if (telaAtual==1) {
             document.getElementById(`telaHome`).classList.remove(`ativa`);
             document.getElementById(`telaLogin`).classList.add(`ativa`);
