@@ -651,6 +651,26 @@ style="position:absolute; top:10px; right:10px; z-index:10000;">Fechar</button>
             grid.style.display = `grid`;
         }
     }
+    function atualizarSaldo() {
+        document.getElementById("saldo").textContent = `$ ${saldo.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}`;
+        document.getElementById("valorApostando").textContent = `$ ${totalAposta.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}`;
+    }
+    function atualizarSaldoFoguetinho() {
+        document.getElementById("saldoFoguetinho").textContent = `$ ${saldo.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}`;
+        document.getElementById("valorApostadoFoguetinho").textContent = `$ ${valorApostadoFoguetinho.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}`;
+    }
     atualizarSaldo();
     atualizarSaldoFoguetinho();
     function apostar(funcao) {
