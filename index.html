@@ -744,10 +744,11 @@ style="position:absolute; top:10px; right:10px; z-index:10000;">Fechar</button>
             multiplicadorAtual = Math.round(multiplicadorAtual * 100) / 100;
             document.getElementById("multiplicadorDisplay").textContent = multiplicadorAtual.toFixed(2) + "x";
             const crashChance = Math.random();
-            if (crashChance < 0.15 || multiplicadorAtual >= 10.00) {
+            if (crashChance < 0.1
+                5 || multiplicadorAtual >= 10.00) {
                 crashFoguetinho();
             }
-        }, 250);
+        }, 800);
     }
     function pararFoguetinho() {
         if (!foguetinhoAtivo || !apostouFoguetinho) return;
