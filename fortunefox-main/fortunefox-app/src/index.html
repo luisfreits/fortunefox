@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortune Fox</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="telaLogin" class="tela ativa">
+    <div id="fundo">
+        <div id="loginHome">
+            <div id="logoLogin"><img src="src/logo-png.png" alt="tipografia"></div>
+            <div id="loginBox">
+                <input type="text" name="user" id="user" placeholder="Usuário">
+                <input type="password" name="senha" id="senha" placeholder="Senha">
+                <button id="botaoLogin" onclick="logar()">Entrar</button> 
+            </div>
+        </div>
+    </div>
+</div>
+<div id="doomContainer" style="display: none; position: fixed; top: 10%; left: 10%; width: 80vw; height: 80vh; z-index: 9999; background: black;">
+    <button onclick="document.getElementById('doomContainer').style.display='none'" 
+style="position:absolute; top:10px; right:10px; z-index:10000;">Fechar</button>
+    <iframe src="https://js-dos.com/games/doom.exe.html" width="100%" height="100%"></iframe>
+</div>
+<div id="telaHome" class="tela">
+    <div id="fundo">
+        <div id="home">
+            <div id="header">
+                <div id="logoHome">
+                    <img src="src/logo-png.png" alt="logo">
+                </div>
+                <div id="userInfo">
+                    Bem-vindo, <span id="nomeUsuario">Usuário</span>!
+                    <button id="botaoSair" onclick="voltar()">Voltar</button>
+                </div>
+            </div>
+            <div id="conteudoHome">
+                <div id="mascara"></div>
+                <div id="fundoGrid"></div>
+                <div id="bloco-jogos" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto; width: 100%;">
+                    <div class="grid-2x2" style="position: static; border: none; background: none; box-shadow: none;">
+                        <button id="btRoleta" onclick="roleta()">ROLETA</button>
+                        <button id="btFoguete" onclick="foguetinho()">FOGUETINHO</button>
+                    </div>
+                </div>
+            </div>
+            <div id="roleta"></div>
+            <div id="foguetinho">
+                <div id="multiplicadorDisplay">0.00x</div>
+                <div id="statusFoguetinho">Faça sua aposta e clique em "Decolar"!</div>
+                <div>
+                    <button id="botaoDecolar" class="botao-foguetinho" onclick="iniciarFoguetinho()">Decolar</button>
+                    <button id="botaoParar" class="botao-foguetinho" onclick="pararFoguetinho()" disabled>Parar</button>
+                    <button id="botaoNovoJogo" class="botao-foguetinho" onclick="resetarFoguetinho()" style="display: none;">Novo Jogo</button>
+                </div>
+            </div>
+            <div id="painelFoguetinho">
+                <div id="tituloSaldoFoguetinho">Saldo</div>
+                <div id="saldoFoguetinho"></div>
+                <input type="text" id="valorApostaFoguetinho" placeholder="Valor da aposta">
+                <button class="botao-aposta-foguetinho" onclick="apostarFoguetinho()">Apostar</button>
+                <div style="font-size: 14px; margin-top: 10px;">Valor apostado:</div>
+                <div id="valorApostadoFoguetinho" style="font-size: 16px; font-weight: bold;"></div>
+            </div>
+            <div id="financeiroJogos">
+                <div id="tituloSaldo">Saldo</div>
+                <div id="saldo"></div>
+                <input type="text" id="valorAposta" placeholder="Valor da aposta">
+                <button id="apostar" onclick="apostar(0)">Apostar</button>
+                <div style="font-size: 14px; margin-top: 10px;">Valor apostado:</div>
+                <div id="valorApostando" style="font-size: 16px; font-weight: bold;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
